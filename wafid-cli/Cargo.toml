@@ -1,0 +1,25 @@
+[package]
+name = "wafid-cli"
+description = "wafid — fast, accurate WAF fingerprinting (CLI on top of wafid-core)"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[[bin]]
+name = "wafid"
+path = "src/main.rs"
+
+[dependencies]
+wafid-core = { path = "../wafid-core" }
+tokio = { workspace = true }
+serde_json = { workspace = true }
+clap = { workspace = true }
+owo-colors = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+csv = { workspace = true }
+chrono = { workspace = true }
+
+[dev-dependencies]
+wiremock = "0.6"

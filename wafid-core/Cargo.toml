@@ -1,0 +1,28 @@
+[package]
+name = "wafid-core"
+description = "wafid — fast, accurate WAF fingerprinting engine (library)"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+tokio = { workspace = true }
+reqwest = { workspace = true }
+serde = { workspace = true }
+serde_yaml = { workspace = true }
+regex = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }
+rand = { workspace = true }
+chrono = { workspace = true }
+url = { workspace = true }
+
+[dev-dependencies]
+serde_json = { workspace = true }
+wiremock = "0.6"
+criterion = { version = "0.5", features = ["async_tokio"] }
+
+[[bench]]
+name = "scan"
+harness = false
