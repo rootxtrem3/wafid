@@ -1,0 +1,268 @@
+# wafid builtin signature pack
+#
+# Schema (per vendor):
+#   vendor:    display name (unique within a pack)
+#   category:  free-form label, e.g. cdn_waf | dedicated_waf | module_waf
+#   signals:
+#     headers:
+#       - key: <header-name>            # matched case-insensitively
+#         match: exists | <value>       # `exists` = any value; else matcher
+#         mode: contains|exact|prefix|regex   # optional; default contains
+#         strength: high|medium|low
+#     cookies:
+#       - pattern: <regex over Set-Cookie names>
+#         strength: ...
+#     body:
+#       - pattern: <regex>              # or `literal:` substring instead
+#         always: true|false            # true = also match baseline pages
+#         strength: ...
+#     status:
+#       - codes: [403, 406]             # anomalous codes on triggered probes
+#         strength: ...
+#
+# Strength weights: high=1.0 medium=0.6 low=0.3
+# Confidence: confirmed = >=2 high signals from distinct detectors;
+#             likely = 1 high or >=2 medium; possible = anything else.
+
+version: "1"
+
+signatures:
+  - vendor: Cloudflare
+    category: cdn_waf
+    signals:
+      headers:
+        - key: cf-ray
+          match: exists
+          strength: high
+        - key: server
+          match: cloudflare
+          strength: high
+        - key: cf-cache-status
+          match: exists
+          strength: low
+        - key: cf-request-id
+          match: exists
+          strength: low
+      cookies:
+        - pattern: "^(__cf|cf_)[\\w-]*"
+          strength: medium
+      body:
+        - pattern: 'Attention Required! \| Cloudflare'
+          strength: high
+        - literal: /cdn-cgi/challenge-platform/
+          strength: high
+        - literal: Checking your browser before accessing
+          strength: low
+      status:
+        - codes: [403, 429, 503]
+          strength: low
+
+  - vendor: Akamai
+    category: cdn_waf
+    signals:
+      headers:
+        - key: x-akamai-transformed
+          match: exists
+          strength: high
+        - key: server
+          match: AkamaiGHost
+          strength: medium
+        - key: x-akamai-request-id
+          match: exists
+          strength: medium
+      cookies:
+        - pattern: "^(ak_bmsc|bm_sv|bm_mi|bm_sz|_abck)"
+          strength: high
+      body:
+        - pattern: '(?s)(Access Denied|Access to this page has been denied).{0,400}(Reference|Support ID)'
+          strength: high
+        - literal: errors.edgesuite.net
+          strength: medium
+      status:
+        - codes: [403]
+          strength: low
+
+  - vendor: Imperva/Incapsula
+    category: cdn_waf
+    signals:
+      headers:
+        - key: x-iinfo
+          match: exists
+          strength: high
+        - key: x-cdn
+          match: Imperva
+          strength: high
+        - key: x-cdn
+          match: Incapsula
+          strength: high
+        - key: x-cdn
+          match: exists
+          strength: medium
+      cookies:
+        - pattern: "^incap_ses_"
+          strength: high
+        - pattern: "^visid_incap_"
+          strength: high
+        - pattern: "^nlbi_"
+          strength: low
+      body:
+        - literal: _Incapsula_Resource
+          strength: high
+        - pattern: 'Request unsuccessful\. Incapsula incident ID'
+          strength: high
+      status:
+        - codes: [403]
+          strength: low
+
+  - vendor: AWS WAF
+    category: cdn_waf
+    signals:
+      headers:
+        - key: x-amzn-waf-action
+          match: exists
+          strength: high
+        - key: x-amz-cf-id
+          match: exists
+          strength: medium
+        - key: via
+          match: cloudfront
+          strength: medium
+        - key: x-amz-cf-pop
+          match: exists
+          strength: low
+      cookies:
+        - pattern: "^aws-waf-token"
+          strength: high
+        - pattern: "^awsalb"
+          strength: low
+      body:
+        - pattern: '(?is)(The request could not be satisfied|Request blocked).{0,300}(CloudFront|Amazon Web Services)'
+          strength: high
+      status:
+        - codes: [403]
+          strength: medium
+
+  - vendor: Sucuri
+    category: dedicated_waf
+    signals:
+      headers:
+        - key: x-sucuri-id
+          match: exists
+          strength: high
+        - key: x-sucuri-block
+          match: exists
+          strength: high
+        - key: server
+          match: Sucuri
+          strength: high
+        - key: x-sucuri-cache
+          match: exists
+          strength: medium
+      cookies:
+        - pattern: "^sucuri_cloudproxy"
+          strength: medium
+      body:
+        - pattern: '(?i)Access Denied.{0,200}Sucuri Website Firewall'
+          strength: high
+        - pattern: '(?i)cloudproxy'
+          strength: low
+
+  - vendor: F5 BIG-IP
+    category: dedicated_waf
+    signals:
+      cookies:
+        - pattern: "^TS[0-9a-fA-F]{4,}"
+          strength: high
+        - pattern: "^MRHSession"
+          strength: low
+        - pattern: "^_aslo"
+          strength: medium
+      body:
+        - literal: The requested URL was rejected.
+          strength: high
+        - pattern: 'Your support ID is:'
+          strength: high
+        - literal: Please consult with your administrator.
+          strength: medium
+      status:
+        - codes: [403]
+          strength: low
+
+  - vendor: ModSecurity (generic)
+    category: module_waf
+    signals:
+      headers:
+        - key: server
+          match: Mod_Security
+          mode: regex
+          strength: high
+      body:
+        - pattern: '(?i)this error was generated by mod[_-]security'
+          strength: high
+        - pattern: '(?i)mod_security.{0,120}(blocked|denied)'
+          strength: medium
+        - literal: Not Acceptable!
+          strength: low
+      status:
+        - codes: [406]
+          strength: medium
+        - codes: [403]
+          strength: low
+
+  - vendor: Barracuda
+    category: dedicated_waf
+    signals:
+      cookies:
+        - pattern: "^barra_counter_session"
+          strength: high
+        - pattern: "^BNI__BarracudaWebApplicationFirewall"
+          strength: high
+        - pattern: "^BNI_persistence"
+          strength: medium
+      body:
+        - pattern: '(?is)(request.{0,60}denied|blocked).{0,300}Barracuda'
+          strength: high
+        - pattern: '(?i)barracudanetworks\.com'
+          strength: low
+      status:
+        - codes: [403]
+          strength: low
+
+  - vendor: Fortinet FortiWeb
+    category: dedicated_waf
+    signals:
+      headers:
+        - key: server
+          match: FortiOS
+          strength: medium
+      cookies:
+        - pattern: "^FORTIWAFSID"
+          strength: high
+      body:
+        - pattern: '(?i)(web page blocked|URL was blocked).{0,300}fortinet'
+          strength: high
+        - pattern: '(?i)fortiweb'
+          strength: medium
+      status:
+        - codes: [403]
+          strength: low
+
+  - vendor: Azure Front Door
+    category: cdn_waf
+    signals:
+      headers:
+        - key: x-azure-ref
+          match: exists
+          strength: high
+        - key: x-cache
+          match: REMOTE_FROM_AFD
+          strength: high
+        - key: x-fd-int-roxy-purgeid
+          match: exists
+          strength: medium
+      body:
+        - literal: The request is blocked.
+          strength: medium
+      status:
+        - codes: [403]
+          strength: low
