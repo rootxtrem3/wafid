@@ -1,0 +1,15 @@
+vendor: Sucuri
+expect_confidence: confirmed
+baseline:
+  status: 200
+  latency_ms: 80
+  headers:
+    server: "Sucuri/Cloudproxy"
+    x-sucuri-id: "11009"
+  body: "<html>Blog</html>"
+triggered:
+  - trigger: cmd_injection
+    status: 403
+    latency_ms: 85
+    headers: {}
+    body: "<html><head><title>Access Denied - Sucuri Website Firewall</title></head><body><p>Your request was blocked by the Sucuri firewall.</p></body></html>"

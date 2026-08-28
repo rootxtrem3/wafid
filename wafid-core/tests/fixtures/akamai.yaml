@@ -1,0 +1,16 @@
+vendor: Akamai
+expect_confidence: confirmed
+baseline:
+  status: 200
+  latency_ms: 60
+  headers:
+    server: "AkamaiGHost"
+    x-akamai-transformed: "9 - 0 pmb=TOE-2"
+    set-cookie: "ak_bmsc=ABCDEF; Path=/; Domain=.example.com"
+  body: "<html>News portal</html>"
+triggered:
+  - trigger: path_traversal
+    status: 403
+    latency_ms: 65
+    headers: {}
+    body: "<html><head><title>Access Denied</title></head><body><p>You don't have permission to access this resource.</p><p>Reference #18.abcdef.1700000000</p><p>Support ID: 12345678901234567890</p></body></html>"

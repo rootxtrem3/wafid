@@ -1,0 +1,15 @@
+vendor: Cloudflare
+expect_confidence: confirmed
+baseline:
+  status: 200
+  latency_ms: 25
+  headers:
+    server: cloudflare
+    cf-ray: "8a1b2c3d4e5f6789"
+  body: "<html><body>Welcome to example.com</body></html>"
+triggered:
+  - trigger: xss_tag
+    status: 403
+    latency_ms: 40
+    headers: {}
+    body: "<!DOCTYPE html><title>Attention Required! | Cloudflare</title>Sorry, you have been blocked."

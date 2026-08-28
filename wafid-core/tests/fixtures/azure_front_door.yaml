@@ -1,0 +1,10 @@
+vendor: Azure Front Door
+expect_confidence: likely
+baseline:
+  status: 200
+  latency_ms: 55
+  headers:
+    x-azure-ref: "20260822T100000Z-abcdef123456"
+    x-cache: "REMOTE_FROM_AFD"
+  body: "<html>SaaS dashboard</html>"
+triggered: []

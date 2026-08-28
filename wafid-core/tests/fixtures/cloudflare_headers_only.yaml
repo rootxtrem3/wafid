@@ -1,0 +1,24 @@
+# Cloudflare — headers + cookie only (no block page body).
+# Expected: likely (one distinct detector — header — with high signals; cookie
+# is medium; no body match fires because no block-page pattern appears).
+
+vendor: Cloudflare
+expect_confidence: likely
+
+baseline:
+  status: 200
+  latency_ms: 45.0
+  headers:
+    cf-ray: "9aabbccddeeff001"
+    server: "cloudflare"
+    cf-cache-status: "HIT"
+    set-cookie: "__cf_bm=abc123; Path=/"
+  body: "<html>normal site content</html>"
+
+# All triggers return 200 with same headers and clean body — no block page,
+# so body detector never fires for delta match.
+triggered:
+  - trigger: xss_tag
+    status: 200
+    latency_ms: 10.0
+    body: "<html>normal site content</html>"

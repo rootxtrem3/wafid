@@ -1,0 +1,15 @@
+vendor: Imperva/Incapsula
+expect_confidence: confirmed
+baseline:
+  status: 200
+  latency_ms: 30
+  headers:
+    x-iinfo: "9-12345678-12345678 NNNN CT(0 0 0) RT(1700000000)"
+    set-cookie: "visid_incap_123456=abc123; expires=Mon, 01 Jan 2029; Path=/"
+  body: "<html><body>Corporate site</body></html>"
+triggered:
+  - trigger: sqli_classic
+    status: 403
+    latency_ms: 35
+    headers: {}
+    body: "<html>Request unsuccessful. Incapsula incident ID: 123456789012345678-123456789</html>"
