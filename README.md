@@ -29,6 +29,11 @@ cargo build --release            # binary at target/release/wafid
 
 Full technical reference — CLI flags, JSON schema, signature-pack format, how detection works, embedding the library — is in [**GUIDE.md**](GUIDE.md).
 
+## Contributors
+
+- [Eba](https://github.com/rootxtrem3) — original author
+- [opencode](https://github.com/anomalyco/opencode) — code, tests and documentation
+
 ## License
 
 MIT
