@@ -31,9 +31,6 @@ Full technical reference — CLI flags, JSON schema, signature-pack format, how 
 
 ## Contributors
 
-- [Eba](https://github.com/rootxtrem3) — original author
+- [Eba](https://github.com/rootxtrem3) — original author, code
 - [opencode](https://github.com/anomalyco/opencode) — code, tests and documentation
 
-## License
-
-MIT
