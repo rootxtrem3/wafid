@@ -1,3 +1,12 @@
+                                                                   
+                                                                   
+                                                                   
+                                                                   
+                                                                   
+                                                                   
+                                                                   
+                                                                   
+                                                                   
 ░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░░▒▓██████▓▒░░▒▓████████▓▒░▒▓█▓▒░▒▓███████▓▒░  
 ░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░      ░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░ 
 ░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░      ░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░ 
@@ -7,7 +16,6 @@
  ░▒▓█████████████▓▒░░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░      ░▒▓█▓▒░▒▓███████▓▒░  
                                                                    
                                                                    
-
 **wafid** is a fast, accurate WAF (Web Application Firewall) fingerprinting tool. Give it a URL and it tells you which firewall or CDN sits in front of the target — Cloudflare, Akamai, AWS WAF, Sucuri, F5, ModSecurity, and more.
 
 Unlike a simple "detected / not detected" check, wafid combines multiple independent signals — response headers, cookies, block-page content, status-code changes and timing behavior — into a weighted **confidence verdict** (`confirmed` / `likely` / `possible`) with an evidence trail you can inspect.
