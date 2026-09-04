@@ -41,7 +41,13 @@ enum SignatureCmd {
 /// Exits 0 when at least one WAF was detected, 1 when none was found,
 /// and 2 on operational errors.
 #[derive(Debug, Parser)]
-#[command(name = "wafid", version, about, after_help = exit_code_help())]
+#[command(
+    name = "wafid",
+    version,
+    about,
+    before_help = ASCII_ART,
+    after_help = exit_code_help()
+)]
 struct Cli {
     /// Target URL (e.g. https://example.com).
     #[arg(short = 'u', long, conflicts_with = "list")]
@@ -124,6 +130,43 @@ fn exit_code_help() -> String {
     "exit codes:\n  0  at least one match\n  1  no matches\n  2  operational error".to_string()
 }
 
+const ASCII_ART: &str = "░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░░▒▓██████▓▒░░▒▓████████▓▒░▒▓█▓▒░▒▓███████▓▒░
+░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░      ░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░
+░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░      ░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░
+░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░▒▓████████▓▒░▒▓██████▓▒░ ░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░
+░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░      ░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░
+░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░      ░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░
+ ░▒▓█████████████▓▒░░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░      ░▒▓█▓▒░▒▓███████▓▒░ ";
+
+/// Colored banner for normal invocations, honoring --no-color / NO_COLOR.
+fn ascii_banner(no_color: bool) -> String {
+    let colored = !no_color && std::env::var_os("NO_COLOR").is_none();
+    if colored {
+        ASCII_ART.cyan().to_string()
+    } else {
+        ASCII_ART.to_string()
+    }
+}
+
+/// Friendly help shown when wafid runs with no scan arguments.
+fn print_welcome(cli_no_color: bool) {
+    println!("{}", ascii_banner(cli_no_color));
+    println!();
+    println!("{}", "wafid".bold());
+    println!("  fast, accurate WAF fingerprinting with confidence scoring and evidence.");
+    println!();
+    println!("{}", "usage:".bold());
+    println!("  wafid -u <url>                      scan one target");
+    println!("  wafid -l <file>                     batch scan one URL per line ('-' = stdin)");
+    println!("  wafid -u <url> --json               structured, machine-readable output");
+    println!("  wafid -u <url> --passive            no attack payloads, baseline signals only");
+    println!("  wafid signatures validate <yaml>    lint a signature pack");
+    println!("  wafid --help                        full CLI reference");
+    println!();
+    println!("{}", "exit codes:".bold());
+    println!("  0  at least one WAF match   1  no matches   2  operational error");
+}
+
 impl Cli {
     fn format(&self) -> OutputFormat {
         if self.json {
@@ -138,6 +181,14 @@ impl Cli {
 async fn main() -> ExitCode {
     let cli = Cli::parse();
     init_logging(cli.verbose);
+
+    if cli.command.is_none() && cli.url.is_none() && cli.list.is_none() {
+        print_welcome(cli.no_color);
+        return ExitCode::SUCCESS;
+    }
+
+    eprintln!("{}", ascii_banner(cli.no_color));
+    eprintln!();
 
     if let Some(Commands::Signatures {
         cmd: SignatureCmd::Validate { path },
@@ -466,5 +517,22 @@ mod tests {
     #[test]
     fn signatures_validate_subcommand_parses() {
         Cli::try_parse_from(["wafid", "signatures", "validate", "some.yaml"]).unwrap();
+    }
+
+    #[test]
+    fn no_args_produces_empty_target_state() {
+        // A bare `wafid` invocation has no url, list or subcommand, which is
+        // exactly the state that routes into the welcome page instead of a scan.
+        let cli = Cli::try_parse_from(["wafid"]).unwrap();
+        assert!(cli.url.is_none());
+        assert!(cli.list.is_none());
+        assert!(cli.command.is_none());
+    }
+
+    #[test]
+    fn ascii_art_contains_wafid_block() {
+        // The banner should render the supplied ASCII figure verbatim.
+        assert!(ASCII_ART.contains("░▒▓█▓▒"));
+        assert!(ASCII_ART.lines().count() >= 7);
     }
 }

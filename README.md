@@ -1,4 +1,12 @@
-# wafid
+░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░░▒▓██████▓▒░░▒▓████████▓▒░▒▓█▓▒░▒▓███████▓▒░  
+░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░      ░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░ 
+░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░      ░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░ 
+░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░▒▓████████▓▒░▒▓██████▓▒░ ░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░ 
+░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░      ░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░ 
+░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░      ░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░ 
+ ░▒▓█████████████▓▒░░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░      ░▒▓█▓▒░▒▓███████▓▒░  
+                                                                   
+                                                                   
 
 **wafid** is a fast, accurate WAF (Web Application Firewall) fingerprinting tool. Give it a URL and it tells you which firewall or CDN sits in front of the target — Cloudflare, Akamai, AWS WAF, Sucuri, F5, ModSecurity, and more.
 
@@ -28,9 +36,3 @@ cargo build --release            # binary at target/release/wafid
 ## Documentation
 
 Full technical reference — CLI flags, JSON schema, signature-pack format, how detection works, embedding the library — is in [**GUIDE.md**](GUIDE.md).
-
-## Contributors
-
-- [Eba](https://github.com/rootxtrem3) — original author, code
-- [opencode](https://github.com/anomalyco/opencode) — code, tests and documentation
-
